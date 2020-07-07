@@ -32,11 +32,24 @@ Converting 2020-01-01 00:01 to recursive months:
   4. Third level: last day was 0.387, 0.387/31 = x/12, x=0.149
   5.  and so on...
 
-## Why?
+## FAQ's
+
+### Why?
 
 Dunno.
 
-## Should I use this?
+### Should I use this?
 
 Probably not.
+
+## Reviews from happy users!
+
+*Why would anyone want to do this?*  
+-My mom
+
+*Hahahahahahahaha!!!*  
+-Coworker/friend
+
+*I hate you.*  
+-My roommate
 
