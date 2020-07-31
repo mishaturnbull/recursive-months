@@ -140,11 +140,9 @@ def from_iso_to_recursive(date, max_depth=7):
 	"""
 	Converts from ISO standard datetime string to recursive calendar.
 	"""
-
-	try:
-		dt = datetime.datetime.fromisoformat(date)
-	except Exception:
-		return "Nope"
+	if not sanity_check_itr(date):
+		# Can't do it, no point trying.
+		return ""
 
 	iso2 = '{:04d}-01-01'.format(dt.year)
 	base = datetime.datetime.fromisoformat(iso2)
