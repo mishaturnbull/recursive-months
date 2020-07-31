@@ -8,6 +8,7 @@ nor does daylight savings, although those things may be implemented later.
 """
 
 import datetime
+import re
 
 MONTHS = {
 		'January':     ['Jan', 31],
@@ -23,6 +24,8 @@ MONTHS = {
 		'November':    ['Nov', 30],
 		'December':    ['Dec', 31]
 	}
+REG_REGEX = re.compile(r"^\d{4}-((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-?)+$")
+ISO_REGEX = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{6}$")
 
 
 def which_month_is_it(month):
@@ -47,12 +50,66 @@ def which_month_is_it(month):
 	return None
 
 
+def sanity_check_rti(date):
+	"""
+	Sanity-checks a value for a recursive-to-iso conversion.
+	Returns either true or false, whether or not the date is
+	safe to be passed to the `from_recursive_to_iso` function.
+	Designed to be as un-crashable as possible.
+	"""
+	# Since we're not charged with figuring out *why*
+	# a value doesn't work, the easiest (least typing)
+	# method of doing this is to wrap a giant try-catch
+	# for AssertionErrors and assert our way through the list
+	# of requirements for that function, simply returning whether
+	# or not we got to the end of the try block successfully.
+	try:
+		assert date, "Must enter a value!"
+		assert isinstance(date, str), "Must be string type!"
+		assert REG_REGEX.match(date), "Doesn't look like a recurdate!"
+
+		# Looks good!
+		return True
+	except AssertionError as e:
+		# This ain't it, chief.
+		return False
+	except Exception as e:
+		# Jeez, something went really wrong.  Probably
+		# should report this.
+		raise
+
+
+def sanity_check_itr(date):
+	"""
+	The reverse of `sanity_check_itr`.  Makes sure that a given
+	argument is safe to pass into the `from_iso_to_recursive`
+	function.
+	Again, designed to be ultra-crash proof.
+	"""
+	# Just like last time.  Giant try-except asserting our way
+	# through the list of requirements.
+	try:
+		assert date, "Must enter a value!"
+		assert isinstance(date, str), "Must be a string!"
+		assert ISO_REGEX.match(date), "Doesn't look like an isodate!"
+		assert datetime.datetime.fromisoformat(date), "Couldn't convert!"
+
+		# Ok, done here!
+		return True
+	except AssertionError as e:
+		# Nope.
+		return False
+	except Exception:
+		raise
+
+
 def from_recursive_to_iso(date):
 	"""
 	Converts from a recursive calendar string to an ISO standard datetime.
 	"""
-	if not isinstance(date, str):
-		return False
+	if not sanity_check_rti(date):
+		# Make sure we can operate safely first.
+		return ""
 
 	months = date.split('-')
 	assert len(months) >= 1, "you must specify at least one item in" \
