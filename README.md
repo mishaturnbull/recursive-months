@@ -24,13 +24,21 @@ and dates are expressed as less precise times.
 
 ## Example
 
-Converting 2020-01-01 00:01 to recursive months:
+Converting 2020-Aug-Oct-May-Jun-Apr-Feb-Jun-Oct to regular
+date format:
 
-  1. Year is 2020, that part's easy
-  2. First level of month: January
-  3. Second level of month: last level had day 1, 1/31 = x/12, x=0.387
-  4. Third level: last day was 0.387, 0.387/31 = x/12, x=0.149
-  5.  and so on...
+1. Year is 2020.
+2. Month is August.
+3. Divide 10 (Oct) by 12, add that * 730^-1 hours to the start
+   of August 2020.
+4. Divide 5 (May) by 12, add that * 730^-2 hours to the cumulative
+   total.
+5. Divide 6 (Jun) by 12, add that * 730^-3 hours to the cumulative
+   total.
+
+Repeat until you've exhausted the string of months, then convert
+the cumulative total plus August 2020 to an ISO date.  Done!
+Easy, right?
 
 ## FAQ's
 
