@@ -144,6 +144,7 @@ def from_iso_to_recursive(date, max_depth=7):
 		# Can't do it, no point trying.
 		return ""
 
+	dt = datetime.datetime.fromisoformat(date)
 	iso2 = '{:04d}-01-01'.format(dt.year)
 	base = datetime.datetime.fromisoformat(iso2)
 
