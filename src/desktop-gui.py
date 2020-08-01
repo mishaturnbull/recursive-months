@@ -23,8 +23,10 @@ import time
 import tkinter as tk
 import conversions
 
-UPDATE_LOOP_RATE_HZ = 2
-
+UPDATE_LOOP_RATE_HZ = 10
+USR_UPDATING_NONE = 0
+USR_UPDATING_ISO = 1
+USR_UPDATING_RCR = 2
 
 class ClockUpdateWorker(threading.Thread):
 	"""
@@ -103,8 +105,71 @@ class GUIRoot(object):
 			'date/time:') \
 			.grid(row=3, column=0, sticky='nw')
 		
+		# set up stringvars for the entry fields, create the fields, and
+		# bind them together.  Also binds the modification callback to
+		# the appropriate variables (methods created below)
+		self.var_iso = tk.StringVar()
+		self.var_rcr = tk.StringVar()
+		self.var_iso.trace('w', self.cb_var_iso)
+		self.var_rcr.trace('w', self.cb_var_rcr)
+		self._usr_update_status = USR_UPDATING_NONE
+
+		self.ent_iso = tk.Entry(self.root,
+				textvariable=self.var_iso,
+				width=40)
+		self.ent_iso.grid(row=4, column=0, sticky='new')
+		self.ent_rcr = tk.Entry(self.root,
+				textvariable=self.var_rcr,
+				width=40)
+		self.ent_rcr.grid(row=5, column=0, sticky='new')
+
 		# bind a new thread to this instance as a handler
 		self.thread = ClockUpdateWorker(self)
+
+	def cb_var_iso(self, *args, **kwargs):
+		"""
+		Callback for handling of modification of the ISO date entry
+		field.  Tries to convert it to recursive, if able, pushes the
+		converted recursive date to the interface.
+		"""
+		# we're not sure if the date entered is a valid date, so
+		# we should check it first.  method for checking provided
+		# by the conversions import
+		sv = self.var_iso
+		if self._usr_update_status == USR_UPDATING_NONE:
+			self._usr_update_status = USR_UPDATING_ISO
+		else:
+			return
+
+		is_valid_iso = conversions.sanity_check_itr(sv.get())
+		if is_valid_iso:
+			recursive = conversions.from_iso_to_recursive(sv.get())
+		else:
+			recursive = ":("
+		self.var_rcr.set(recursive)
+		self._usr_update_status = USR_UPDATING_NONE
+
+	def cb_var_rcr(self, *args, **kwargs):
+		"""
+		Callback for handling of modification of the recursive date
+		entry field.  Tries to convert it to ISO, if able, pushes the
+		ISO date back to the interface.
+		"""
+		# again, not yet sure if it's valid or not, so we'll have the
+		# conversions module check it for us
+		sv = self.var_rcr
+		if self._usr_update_status == USR_UPDATING_NONE:
+			self._usr_update_status = USR_UPDATING_RCR
+		else:
+			return
+
+		is_valid_rcr = conversions.sanity_check_rti(sv.get())
+		if is_valid_rcr:
+			iso = conversions.from_recursive_to_iso(sv.get())
+		else:
+			iso = ":("
+		self.var_iso.set(iso)
+		self._usr_update_status = USR_UPDATING_NONE
 
 	def go(self):
 		"""
