@@ -3,17 +3,17 @@
 This is a proof-of-concept implementation of a really, really
 bad calendaring system.
 
-Years are still unchanged, except there's no more such thing
-as a leap year.  We disregard that extra day, nobody needs it.
+Years are still unchanged, except there's no longer such a
+thing as a leap year.  We disregard that extra day, nobody needs it.
 
-The months of the year are roughly as normal, except that
-instead of randomly arbitrated numbers of days each month
-is *exactly* 1/12 of a year long, or 730 hours long.  This
+The months of the year are roughly the same, except that
+instead of a randomly arbitrated numbers of days each month
+is *exactly* 1/12 of a year long-or 730 hours long.  This
 fact will soon become important.
 
 To handle dates within the months, we use ... more months.
-Each month is broken up into twelve more months, each now
-60.8333 hours long.  The sub-months use the same names as
+Each month is then broken up into twelve more months, each now
+being 60.8333 hours long.  The sub-months use the same names as
 the regular months.
 
 This cycle of recursive months repeats until you get as
